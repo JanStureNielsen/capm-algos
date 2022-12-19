@@ -6,6 +6,7 @@ output:
 ---
 This notebook contains all information for running a full session, including practice sessions. Chunks must be run one by one. Here is a numbered index of what is performed in each chunk:
 
+0. Setup experiment-specific configuration.
 1. Load packages, set parameters for calculations and provide login info for adhocmarkets.
 2. Parameters for manual trading, including info for adhocmarkets manual session and start the practice round for manual trading.
 3. Stop the practice round and process data.
@@ -15,9 +16,9 @@ This notebook contains all information for running a full session, including pra
 7. Run algo real rounds, collect and process data.
 8. Generate payoff with internal or external draws vector.
 
-There is a first chunk (0) to be run for setup of the entire notebook. It can be run before the experiment starts
+There is a first chunk (0) to be run for setup of the entire notebook. It can be run before the experiment starts.
 
-### Chunk 0 
+### Chunk 0
 Must modify the path to all experiment-specific files:
 
 - For practicing today, it is "GroupPractice"
@@ -31,11 +32,11 @@ Must modify the path to all experiment-specific files:
 ```
 
 ### Chunk 1 - session parameters
-Chunk 1 should be run once we have the signup file
+Chunk 1 should be run when the sign-up file is complete
 
 Parameters to set:
 
-- Login information: "account|email", "password"  (already set)
+- Manager login information: "account|email", "password"  (already set)
 - Number of the manual treatment marketplace (1109), and the algos treatment marketplace (1096)
 - Duration of manual rounds (60 seconds for practice, 10 minutes for real)
 - Duration of pause between rounds to give feedback (60 second for practice, 120 seconds for real)
@@ -91,12 +92,12 @@ AlgEffD<- AlgD/(Npause+1)
 
 login<- authenticate("account|email", "password")  
 
-marketplaceNo<- "1134" 
+marketplaceNo<- "1134"
 AmarketplaceNo<- "1130"
 
 ```
 
-### Chunk 2: start the practice round 
+### Chunk 2: start the practice round
 We load initial holdings to be sure all is kosher at the beginning of the manual rounds. Must do this only once.
 
 ```{r Chunk2}
@@ -124,7 +125,7 @@ zz<- GET(paste0(hero,"/holdings/downloads"), config = login)
 yolk<- content(zz, 'text')
 polk<- strsplit(yolk, '\n')
 # GET holdings data
-qgg<- grep('# holdings', polk[[1]]) 
+qgg<- grep('# holdings', polk[[1]])
 gg<- sort(qgg)
 bot<- gg[length(gg)-1]+1
 top<- gg[length(gg)]-1
@@ -162,7 +163,7 @@ Modify the object "leftbeforemanual" below to contain a list of subjects who lef
 ### ENTER ID "M#" OF SUBJECT WHO LEFT EXPERIMENT HERE
 leftbeforemanual<- NULL # SOME EXAMPLES: leftbeforemanual<- "M01", leftbeforemanual<- c('M01', 'M05')
 
-hero<- paste0("https://fm-data.herokuapp.com/api/marketplaces/", marketplaceNo) # Modify the market number only 
+hero<- paste0("https://fm-data.herokuapp.com/api/marketplaces/", marketplaceNo) # Modify the market number only
 
 signup<- signup[!(is.na(signup$email)),]
 if(!(is.null(leftbeforemanual))){
@@ -420,7 +421,7 @@ We change markets, load the setup (same as for manual), and start the practice f
 
 ```{r Chunk5}
 # Change "hero" to the right market
-hero<- paste0("https://fm-data.herokuapp.com/api/marketplaces/", AmarketplaceNo) 
+hero<- paste0("https://fm-data.herokuapp.com/api/marketplaces/", AmarketplaceNo)
 
 # marketin is the path to the setup file relevant for the manual sessions
 marketin<- "Setup_Algos_Practice.csv"
@@ -523,14 +524,14 @@ This will run all algo rounds, generate feedback and store payoff information as
 
 **TESTED WITH PAUSES:** All works great
 
-Modify object "leftbeforealgo" to list any students that might have left between the start of the manual rounds and the start of the algo round. 
+Modify object "leftbeforealgo" to list any students that might have left between the start of the manual rounds and the start of the algo round.
 
 ```{r Chunk9}
 ### ENTER ID "M#" OF SUBJECT WHO LEFT EXPERIMENT HERE
 leftbeforealgo<- NULL # SOME EXAMPLES: leftbeforealgo<- "M01", leftbeforealgo<- c('M01', 'M05')
 
 # Change "hero" to the right market (Done in chunk 5, but just in case...)
-#hero<- paste0("https://fm-data.herokuapp.com/api/marketplaces/", AmarketplaceNo) 
+#hero<- paste0("https://fm-data.herokuapp.com/api/marketplaces/", AmarketplaceNo)
 
 # Reload signup so we don't run into trouble
 if(file.exists('signupsofar.xlsx')){
@@ -1860,5 +1861,3 @@ write.xlsx(Pays, 'Payment.xlsx', row.names = FALSE)
 yy<- PATCH(paste0(hero,'/close'), config = login)
 write.csv(ttracker, 'TrackerInfo.csv', row.names = FALSE)
 ```
-
-
